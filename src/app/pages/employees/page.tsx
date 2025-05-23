@@ -1,5 +1,6 @@
-import { MoreVertical } from 'lucide-react';
-import React, { useState } from 'react';
+import { Edit, Flag, MoreVertical, Trash } from 'lucide-react';
+import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
 
 import Button from '@/components/buttons/Button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,22 +8,57 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 import { useTileContext } from '@/app/store/TileContextProvider';
 
+type Employee = {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  avatar: string;
+};
+
 const AllEmployees = () => {
   const { isTileView } = useTileContext();
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [employees, setEmployees] = useState([]);
+  useEffect(() => {
+    fetch('https://reqres.in/api/users?page=2')
+      .then((res) => res.json())
+      .then((data) => setEmployees(data.data));
+  }, []);
+  const sampleEmployees =
+    employees.length == 0
+      ? Array.from({ length: 20 }, (_, i) => ({
+          id: i + 1,
+          name: `Employee ${i + 1}`,
+          title: 'Software Engineer',
+          department: 'Engineering',
+          location: 'Remote',
+          email: `employee${i + 1}@company.com`,
+          phone: '123-456-7890',
+          status: 'Active',
+          dateHired: '2021-01-01',
+          manager: `Matype Employee = {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  avatar: string;
+};
+nager ${i + 1}`,
+          avatar: `https://reqres.in/img/faces/${(i % 12) + 1}-image.jpg`,
+        }))
+      : employees;
+  const handleEdit = (emp: Employee) => {
+    alert(`Editing employee: ${emp.first_name} ${emp.last_name}`);
+  };
 
-  const sampleEmployees = Array.from({ length: 20 }, (_, i) => ({
-    id: i + 1,
-    name: `Employee ${i + 1}`,
-    title: 'Software Engineer',
-    department: 'Engineering',
-    location: 'Remote',
-    email: `employee${i + 1}@company.com`,
-    phone: '123-456-7890',
-    status: 'Active',
-    dateHired: '2021-01-01',
-    manager: `Manager ${i + 1}`,
-  }));
+  const handleFlag = (emp: Employee) => {
+    alert(`Flagged employee: ${emp.first_name} ${emp.last_name}`);
+  };
+
+  const handleDelete = (empId: number) => {
+    setEmployees((prev) => prev.filter((e) => e.id !== empId));
+  };
   return (
     <div>
       <main className='p-4 grid gap-4'>
@@ -46,6 +82,36 @@ const AllEmployees = () => {
                   </div>
                   <p className='mt-2 text-sm text-gray-500'>{emp.department}</p>
                   <p className='text-sm text-gray-500'>{emp.location}</p>
+                  <Image
+                    src={emp.avatar}
+                    alt='avatar'
+                    className='w-16 h-16 rounded-full mt-2'
+                    width={20}
+                    height={30}
+                  />
+                  <div className='mt-2 flex justify-between'>
+                    <Button
+                      size='icon'
+                      variant='ghost'
+                      onClick={() => handleEdit(emp)}
+                    >
+                      <Edit size={16} />
+                    </Button>
+                    <Button
+                      size='icon'
+                      variant='ghost'
+                      onClick={() => handleFlag(emp)}
+                    >
+                      <Flag size={16} />
+                    </Button>
+                    <Button
+                      size='icon'
+                      variant='ghost'
+                      onClick={() => handleDelete(emp.id)}
+                    >
+                      <Trash size={16} />
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
