@@ -7,6 +7,8 @@ import '@/styles/colors.css';
 
 import { siteConfig } from '@/constant/config';
 
+import { TileContextProvider } from './store/TileContextProvider';
+
 // !STARTERCONF Change these default meta
 // !STARTERCONF Look at @/constant/config to change them
 export const metadata: Metadata = {
@@ -56,7 +58,9 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <body>{children}</body>
+      <body>
+        <TileContextProvider>{children}</TileContextProvider>
+      </body>
     </html>
   );
 }
